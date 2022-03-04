@@ -21,12 +21,12 @@ const getUserById = db.prepare(`
 SELECT * FROM users WHERE id=?;
 `)
 
-app.get('/users', (req, res) => {
- const users = getUsers.all()
- for(const user of users){
-    getUsers.run()
- }
-})
+// app.get('/post', (req, res) => {
+//  const users = getUsers.all()
+//  for(const user of users){
+//     getUsers.run()
+//  }
+// })
 
 app.listen(4000, () => {
     console.log(`Running on : http://localhost:4000`)

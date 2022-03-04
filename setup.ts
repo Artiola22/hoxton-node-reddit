@@ -5,11 +5,11 @@ const db = new Database("./data.db", {
 });
 
 db.exec(`
-DROP TABLE IF EXISTS userSubreddits;
-DROP TABLE IF EXISTS comments;
 DROP TABLE IF EXISTS postsLikes;
+DROP TABLE IF EXISTS userSubreddits;
 DROP TABLE IF EXISTS commentUpvotes;
 DROP TABLE IF EXISTS commentDownvotes;
+DROP TABLE IF EXISTS comments;
 DROP TABLE IF EXISTS posts;
 DROP TABLE IF EXISTS subreddits;
 DROP TABLE IF EXISTS users;
@@ -56,7 +56,9 @@ CREATE TABLE users(
     id INTEGER,
     userId INTEGER,
     postId INTEGER,
-    PRIMARY KEY(id)
+    PRIMARY KEY(id),
+    FOREIGN KEY (userId) REFERENCES users(id),
+    FOREIGN KEY (postId) REFERENCES posts(id)
    );
 
    CREATE TABLE subreddits(
@@ -72,7 +74,8 @@ CREATE TABLE users(
     subredditId INTEGER,
     dateJoined TEXT,
     PRIMARY KEY(id)
-    FOREIGN KEY (userId) REFERENCES users(id)
+    FOREIGN KEY (userId) REFERENCES users(id),
+    FOREIGN KEY (subredditId) REFERENCES subreddits(id)
    );
 
    CREATE TABLE commentUpvotes(
@@ -84,14 +87,14 @@ CREATE TABLE users(
     FOREIGN KEY (commentId) REFERENCES comments(id)
    );
 
-  //  CREATE TABLE commentDownvotes(
-  //   id INTEGER,
-  //   userId INTEGER,
-  //   commentId INTEGER,
-  //   PRIMARY KEY (id),
-  //   FOREIGN KEY (userId) REFERENCES users(id),
-  //   FOREIGN KEY (commentId) REFERENCES comments(id)
-  //  );
+   CREATE TABLE commentDownvotes(
+    id INTEGER,
+    userId INTEGER,
+    commentId INTEGER,
+    PRIMARY KEY (id),
+    FOREIGN KEY (userId) REFERENCES users(id),
+    FOREIGN KEY (commentId) REFERENCES comments(id)
+   );
 
 
 `);
@@ -222,19 +225,19 @@ for (const comment of comments) {
 const postsLikes = [
   {
     userId: 1,
-    postId: 1,
+    postId: 1
   },
   {
     userId: 1,
-    postId: 2,
+    postId: 2
   },
   {
     userId: 2,
-    postId: 1,
+    postId: 1
   },
   {
     userId: 2,
-    postId: 2,
+    postId: 2
   },
 ];
 const createPostsLikes = db.prepare(`
@@ -262,7 +265,7 @@ const userSubreddits = [
     dateJoined: "01/03/2022",
   },{
     userId: 3,
-    subredditId: 4,
+    subredditId: 2,
     dateJoined: "01/02/2022",
   },{
     userId: 2,
@@ -274,7 +277,7 @@ const userSubreddits = [
     dateJoined: "01/02/2022",
   },{
     userId: 1,
-    subredditId: 4,
+    subredditId: 2,
     dateJoined: "01/02/2021",
   }
 ];
@@ -324,39 +327,39 @@ for(const commentUpvote of commentUpvotes){
     createCommentUpvotes.run(commentUpvote.userId, commentUpvote.commentId)
 }
 
-// const commentDownvotes = [
-//     {
-//         userId: 1,
-//         commentId: 1
-//     },
-//     {
-//         userId: 1,
-//         commentId: 2
-//     },
-//     {
-//         userId: 1,
-//         commentId: 3
-//     },
-//     {
-//         userId: 2,
-//         commentId: 1
-//     },
-//     {
-//         userId: 2,
-//         commentId: 2
-//     },
-//     {
-//         userId: 3,
-//         commentId: 2
-//     },
-//     {
-//         userId: 4,
-//         commentId: 2
-//     }
-// ];
-// const createCommentDownvotes = db.prepare(`
-// INSERT INTO commentDownvotes(userId, commentId) VALUES (?, ?);
-// `)
-// for(const commentDownvote of commentDownvotes){
-//     createCommentDownvotes.run(commentDownvote.userId, commentDownvote.commentId)
-// }
+const commentDownvotes = [
+    {
+        userId: 1,
+        commentId: 1
+    },
+    {
+        userId: 1,
+        commentId: 2
+    },
+    {
+        userId: 1,
+        commentId: 3
+    },
+    {
+        userId: 2,
+        commentId: 1
+    },
+    {
+        userId: 2,
+        commentId: 2
+    },
+    {
+        userId: 3,
+        commentId: 2
+    },
+    {
+        userId: 4,
+        commentId: 2
+    }
+];
+const createCommentDownvotes = db.prepare(`
+INSERT INTO commentDownvotes(userId, commentId) VALUES (?, ?);
+`)
+for(const commentDownvote of commentDownvotes){
+    createCommentDownvotes.run(commentDownvote.userId, commentDownvote.commentId)
+}
